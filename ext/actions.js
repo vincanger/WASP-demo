@@ -16,8 +16,12 @@ export const updateTask = async ({ taskId, data }, context) => {
   if (!context.user) {
     throw new HttpError(401);
   }
+
   return context.entities.Task.updateMany({
-    where: { id: taskId, user: { id: context.user.id } },
+    where: {
+      id: taskId,
+      // user: { id: context.user.id }
+    },
     data: { isDone: data.isDone },
   });
 };
