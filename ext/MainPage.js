@@ -4,7 +4,6 @@ import React, { useEffect } from 'react';
  * GET WASPY {= 🐝
  */
 import getTasks from '@wasp/queries/getTasks';
-import getTask from '@wasp/queries/getTask';
 import { useQuery } from '@wasp/queries';
 import createTask from '@wasp/actions/createTask';
 import { useUpdate } from './useOperations';
@@ -15,16 +14,13 @@ import { ReactQueryDevtools } from 'react-query/devtools';
 import useAuth from '@wasp/auth/useAuth.js';
 
 const MainPage = ({ user }) => {
-  const [taskToFetch, setTaskToFetch] = React.useState(null);
   const [filteredTasks, setFilteredTasks] = React.useState(null);
 
   const { data: tasks, isFetching, error } = useQuery(getTasks);
-  // const { data: task } = useQuery(getTask, { taskId: Number(taskToFetch) }, { enabled: !!taskToFetch });
 
    const { data: useAuthUser } = useAuth();
 
   const handleTaskToFetch = (taskId) => {
-    // setTaskToFetch(taskId);
     findTaskToHighlight(taskId)
   };
 
@@ -55,6 +51,7 @@ const MainPage = ({ user }) => {
 
   return (
     <div>
+      <h1>{user.username}'s tasks</h1>
       <NewTaskForm />
       <FindTaskForm setTaskToFetch={handleTaskToFetch} />
 
