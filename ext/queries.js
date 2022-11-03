@@ -7,14 +7,14 @@ export const getTask = async (args, context) => {
   console.log('conetext', context);
   console.log('args', args);
 
-  return context.entities.Task.findUnique({
+  // find unique task by id where user id matches
+  return await context.entities.Task.findUnique({
     where: {
       id: args.taskId,
-      // user: {
-      //   id: context.user.id,
-      // },
+      // user: { id: context.user.id }
     },
   });
+
 };
 
 export const getTasks = async (args, context) => {
@@ -22,6 +22,6 @@ export const getTasks = async (args, context) => {
     throw new HttpError(401);
   }
   return context.entities.Task.findMany(
-      // { where: { user: { id: context.user.id } } }
+      { where: { user: { id: context.user.id } } }
     );
 };

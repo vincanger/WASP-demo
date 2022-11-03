@@ -1,14 +1,20 @@
 app TodoApp {
   title: "TodoApp",
   auth: {
+    // Expects entity User to have (username:String) and (password:String) fields.
     userEntity: User,
-    methods: [ EmailAndPassword ], // More methods coming soon!
-    onAuthFailedRedirectTo: "/login" // We will see how this is used a bit later
+    methods: {
+      usernameAndPassword: {} // We also support Google, with more on the way!
+    },
+    onAuthFailedRedirectTo: "/test" // We'll see how this is used a bit later
   },
   dependencies: [
     ("react-clock", "3.0.0"),
-    ("react-query", "^3.34.19")
-  ]
+    ("react-query", "^3.39.2")
+  ],
+  db: {
+    system: PostgreSQL
+  }
 }
 
 route RootRoute { path: "/", to: MainPage }
@@ -27,6 +33,11 @@ page LoginPage {
   component: import Login from "@ext/LoginPage"
 }
 
+route testRoute { path: "/test", to: TestPage }
+page TestPage {
+  component: import Test from "@ext/TestPage"
+}
+
 entity Task {=psl
     id          Int     @id @default(autoincrement())
     description String
@@ -37,7 +48,7 @@ psl=}
 
 entity User {=psl
     id          Int     @id @default(autoincrement())
-    email       String  @unique
+    username    String  @unique
     password    String  
     tasks       Task[]
 psl=}
@@ -65,4 +76,9 @@ action createTask {
 action updateTask {
   fn: import { updateTask } from "@ext/actions.js",
   entities: [Task]
+}
+
+action signUp {
+  fn: import { signUp } from "@ext/actions.js",
+  entities: [User]
 }

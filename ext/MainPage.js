@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-/**
+/*
  * GET WASPY {= 🐝
  */
 import getTasks from '@wasp/queries/getTasks';
@@ -12,33 +12,43 @@ import logout from '@wasp/auth/logout.js';
 import Clocks from './Clocks';
 import { useQueryClient,  } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-
+import useAuth from '@wasp/auth/useAuth.js';
 
 const MainPage = ({ user }) => {
   const [taskToFetch, setTaskToFetch] = React.useState(null);
   const [filteredTasks, setFilteredTasks] = React.useState(null);
 
   const { data: tasks, isFetching, error } = useQuery(getTasks);
-  const { data: task } = useQuery(getTask, { taskId: Number(taskToFetch) }, { enabled: !!taskToFetch });
+  // const { data: task } = useQuery(getTask, { taskId: Number(taskToFetch) }, { enabled: !!taskToFetch });
 
-  useEffect(() => {
-    if (task) {
-      findTaskToHighlight(taskToFetch)
-    }
-  }, [task, tasks]);
+   const { data: useAuthUser } = useAuth();
+
+  const handleTaskToFetch = (taskId) => {
+    // setTaskToFetch(taskId);
+    findTaskToHighlight(taskId)
+  };
 
   const findTaskToHighlight = (taskId) => {
+    console.log('taskId', taskId);
     if (!tasks) return;
 
-    // setTaskToFetch(taskId);
+    const currentTasks = filteredTasks ?? tasks;
+    console.log('currentTasks', currentTasks);
+    currentTasks.forEach((task) => {
+      if (task.highlighted) {
+        task.highlighted = false;
+      }
+    });
 
-    const taskHighlight = tasks.find((task) => {
-      return task.id === parseInt(taskId);
+    const idByIndex = currentTasks[taskId - 1].id;
+
+    const taskHighlight = currentTasks.find((task) => {
+      return task.id === parseInt(idByIndex);
     });
 
     // prepend highlight property to task object
     const taskHighlightWithProperty = { ...taskHighlight, highlighted: true };
-    setFilteredTasks([taskHighlightWithProperty, ...tasks.filter((task) => task.id !== parseInt(taskId))]);
+    setFilteredTasks([taskHighlightWithProperty, ...currentTasks.filter((task) => task.id !== parseInt(idByIndex))]);
 
     return taskHighlight;
   };
@@ -46,7 +56,7 @@ const MainPage = ({ user }) => {
   return (
     <div>
       <NewTaskForm />
-      <FindTaskForm setTaskToFetch={setTaskToFetch} />
+      <FindTaskForm setTaskToFetch={handleTaskToFetch} />
 
       {filteredTasks ? <TasksList tasks={filteredTasks} /> : <TasksList tasks={tasks} />}
       {isFetching && 'Fetching...'}
@@ -81,7 +91,7 @@ const Task = (props) => {
   return (
     <div style={{ margin: '5px' }}>
       <span>
-        {props.task.id}
+        {props.number+1} 
         {''}
       </span>
       <input type='checkbox' id={props.task.id} checked={props.task.isDone} onChange={handleIsDoneChange} />
@@ -93,7 +103,7 @@ const Task = (props) => {
 
 const TasksList = (props) => {
   if (!props.tasks?.length) return 'No tasks';
-  return props.tasks.map((task, idx) => <Task task={task} key={idx} />);
+  return props.tasks.map((task, idx) => <Task task={task} number={idx} key={idx} />);
 };
 
 const NewTaskForm = (props) => {

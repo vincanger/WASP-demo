@@ -13,10 +13,5 @@ export const useUpdate = () => {
     return new Promise((resolve) => setTimeout(() => resolve(
       updateTask({ taskId, data })
     ), 1500));
-
-    // return setTimeout(() => {
-    //  return updateTask({ taskId, data });
-    // }, 3000);
-
   });
 };
