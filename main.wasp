@@ -3,10 +3,15 @@ app TodoApp {
   auth: {
     // Expects entity User to have (username:String) and (password:String) fields.
     userEntity: User,
+    externalAuthEntity: SocialLogin,
     methods: {
-      usernameAndPassword: {} // We also support Google, with more on the way!
+      usernameAndPassword: {}, 
+      google: {
+        getUserFieldsFn: import { getUserFields } from "@ext/auth/google.js"
+      }
     },
-    onAuthFailedRedirectTo: "/test" // We'll see how this is used a bit later
+    onAuthFailedRedirectTo: "/login",
+    onAuthSucceededRedirectTo: "/",
   },
   dependencies: [
     ("react-clock", "3.0.0"),
@@ -20,7 +25,7 @@ app TodoApp {
 route RootRoute { path: "/", to: MainPage }
 page MainPage {
   authRequired: true,
-  component: import Main from "@ext/MainPage.js"
+  component: import Main from "@ext/MainPage.jsx"
 }
 
 route SignupRoute { path: "/signup", to: SignupPage }
@@ -49,8 +54,20 @@ psl=}
 entity User {=psl
     id          Int     @id @default(autoincrement())
     username    String  @unique
+    displayName String  
     password    String  
     tasks       Task[]
+    externalAuthAssociations SocialLogin[]
+psl=}
+
+entity SocialLogin {=psl
+  id          Int       @id @default(autoincrement())
+  provider    String
+  providerId  String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  createdAt   DateTime  @default(now())
+  @@unique([provider, providerId, userId])
 psl=}
 
 query getTasks {

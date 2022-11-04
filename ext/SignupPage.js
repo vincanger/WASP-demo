@@ -2,8 +2,6 @@ import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import signUp from '@wasp/actions/signUp';
 
-
-
 const SignupPage = () => {
   let history = useHistory();
 

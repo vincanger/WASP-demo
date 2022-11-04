@@ -11,14 +11,18 @@ import logout from '@wasp/auth/logout.js';
 import Clocks from './Clocks';
 import { useQueryClient,  } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-import useAuth from '@wasp/auth/useAuth.js';
+// import useAuth from '@wasp/auth/useAuth.js';
 
-const MainPage = ({ user }) => {
+const MainPage = ( props ) => {
+  
   const [filteredTasks, setFilteredTasks] = React.useState(null);
-
   const { data: tasks, isFetching, error } = useQuery(getTasks);
+  // you can get user from props or by using useAuth hook
+  // const { data: useAuthUser } = useAuth();
 
-   const { data: useAuthUser } = useAuth();
+  useEffect(() => {
+    console.log('user---->', props);
+  }, [props]);
 
   const handleTaskToFetch = (taskId) => {
     findTaskToHighlight(taskId)
@@ -51,7 +55,7 @@ const MainPage = ({ user }) => {
 
   return (
     <div>
-      <h1>{user.username}'s tasks</h1>
+      <h1>{props.user.displayName}{`'s tasks (<--- this is the user's displayName)`}</h1>
       <NewTaskForm />
       <FindTaskForm setTaskToFetch={handleTaskToFetch} />
 
