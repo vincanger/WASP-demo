@@ -82,7 +82,6 @@ query getTasks {
 query getTask {
   fn: import { getTask } from "@ext/queries.js",
   entities: [Task]
-
 }
 
 action createTask {

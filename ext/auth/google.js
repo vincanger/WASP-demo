@@ -1,4 +1,4 @@
-import { generateAvailableUsername, generateAvailableDictionaryUsername } from '@wasp/core/auth.js';
+import { generateAvailableDictionaryUsername } from '@wasp/core/auth.js';
 
 // custom function to create a displayName for user based on google profile
 // but still uses the default random username generation proivded by wasp
