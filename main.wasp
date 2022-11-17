@@ -56,6 +56,7 @@ entity User {=psl
     username    String  @unique
     displayName String  
     password    String  
+    isAuthComplete    Boolean @default(false)
     tasks       Task[]
     externalAuthAssociations SocialLogin[]
 psl=}
@@ -96,5 +97,10 @@ action updateTask {
 
 action signUp {
   fn: import { signUp } from "@ext/actions.js",
+  entities: [User]
+}
+
+action updateUsername {
+  fn: import { updateUsername } from "@ext/actions.js",
   entities: [User]
 }

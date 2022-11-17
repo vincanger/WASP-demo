@@ -9,23 +9,19 @@ import createTask from '@wasp/actions/createTask';
 import { useUpdate } from './useOperations';
 import logout from '@wasp/auth/logout.js';
 import Clocks from './Clocks';
-import { useQueryClient,  } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-// import useAuth from '@wasp/auth/useAuth.js';
+import UpdateUserDetails from './UpdateUserDetails';
 
-const MainPage = ( props ) => {
-  
+const MainPage = (props) => {
   const [filteredTasks, setFilteredTasks] = React.useState(null);
   const { data: tasks, isFetching, error } = useQuery(getTasks);
-  // you can get user from props or by using useAuth hook
-  // const { data: useAuthUser } = useAuth();
 
   useEffect(() => {
     console.log('user---->', props);
   }, [props]);
 
   const handleTaskToFetch = (taskId) => {
-    findTaskToHighlight(taskId)
+    findTaskToHighlight(taskId);
   };
 
   const findTaskToHighlight = (taskId) => {
@@ -53,9 +49,16 @@ const MainPage = ( props ) => {
     return taskHighlight;
   };
 
+  if (!props.user.isAuthComplete) {
+    return <UpdateUserDetails user={props.user} />;
+  }
+
   return (
     <div>
-      <h1>{props.user.displayName}{`'s tasks (<--- this is the user's displayName)`}</h1>
+      <h1>
+        {props.user.displayName}
+        {`'s tasks (<--- this is the user's displayName)`}
+      </h1>
       <NewTaskForm />
       <FindTaskForm setTaskToFetch={handleTaskToFetch} />
 
@@ -72,8 +75,6 @@ const MainPage = ( props ) => {
 };
 
 const Task = (props) => {
-  // console.log('props', props);
-  const queryClient = useQueryClient();
 
   const mutation = useUpdate();
   const handleIsDoneChange = (event) => {
@@ -83,7 +84,6 @@ const Task = (props) => {
         data: { isDone: event.target.checked },
       });
       console.log('mutation', mutation);
-      // queryClient.invalidateQueries(['Tasks']);
     } catch (error) {
       window.alert('Error while updating task: ' + error.message);
     }
@@ -92,12 +92,12 @@ const Task = (props) => {
   return (
     <div style={{ margin: '5px' }}>
       <span>
-        {props.number+1} 
+        {props.number + 1}
         {''}
       </span>
       <input type='checkbox' id={props.task.id} checked={props.task.isDone} onChange={handleIsDoneChange} />
-      <span style={{ color: props.task.highlighted ? 'red' : 'black' }}>{props.task.description}</span>
-      {' '}{mutation.isLoading && '...Updating...'}
+      <span style={{ color: props.task.highlighted ? 'red' : 'black' }}>{props.task.description}</span>{' '}
+      {mutation.isLoading && '...Updating...'}
     </div>
   );
 };
